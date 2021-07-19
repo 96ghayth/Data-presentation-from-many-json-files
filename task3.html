@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Task3</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
+ "></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: grid;
+      padding: 100px;
+      color: #4f546c;
+      font-size: 0.9rem;
+      background-color: #f9fbff;
+      ;
+    }
+
+    table {
+      border-collapse: collapse;
+      box-shadow: 0 5px 10px #e1e5ee;
+      background-color: white;
+      text-align: left;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    thead {
+      box-shadow: 0 5px 10px #e1e5ee;
+    }
+
+    th {
+      padding: 1rem 2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1rem;
+      font-size: 0.7rem;
+      font-weight: 900;
+    }
+
+    td {
+      padding: 1rem 2rem;
+    }
+
+    a {
+      text-decoration: none;
+      color: #2962ff;
+    }
+
+    .status {
+      border-radius: 0.2rem;
+      background-color: red;
+      padding: 0.2rem 1rem;
+      text-align: center;
+    }
+
+    .status-pending {
+      background-color: #fff0c2;
+      color: #a68b00;
+    }
+
+    .status-paid {
+      background-color: #c8e6c9;
+      color: #388e3c;
+    }
+
+    .status-unpaid {
+      background-color: #ffcdd2;
+      color: #c62828;
+    }
+
+
+    .amount {
+      text-align: right;
+    }
+
+    .quantity {
+      position: relative;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    .quantity input {
+      width: 45px;
+      height: 42px;
+      line-height: 1.65;
+      float: left;
+      display: block;
+      padding: 0;
+      margin: 0;
+      padding-left: 20px;
+      border: 1px solid #eee;
+    }
+
+    .quantity input:focus {
+      outline: 0;
+    }
+
+    .quantity-nav {
+      float: left;
+      position: relative;
+      height: 42px;
+    }
+
+    .quantity-button {
+      position: relative;
+      cursor: pointer;
+      border-left: 1px solid #eee;
+      width: 20px;
+      text-align: center;
+      color: #333;
+      font-size: 13px;
+      font-family: "Trebuchet MS", Helvetica, sans-serif !important;
+      line-height: 1.7;
+      -webkit-transform: translateX(-100%);
+      transform: translateX(-100%);
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+    }
+
+    .quantity-button.quantity-up {
+      position: absolute;
+      height: 50%;
+      top: 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .quantity-button.quantity-down {
+      position: absolute;
+      bottom: -1px;
+      height: 50%;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f4f6fb;
+    }
+  </style>
+</head>
+
+<body>
+  <table>
+    <thead>
+      <tr>
+        <th>product</th> 
+        <th>price</th>
+        <th>quantity </th>
+
+
+
+      </tr>
+    <tbody id="tab">
+    </tbody>
+    </thead>
+
+
+  </table>
+</body>
+
+</html>
+<script>
+  
+  $(document).ready(function () {
+    $.getJSON("response (1).json", function (data) {
+      // console.log(JSON.parse(data));
+      console.log(data);
+      var x = '';
+      let amount_data = data.amounts.map((el)=>el.data);
+      let amount_text = data.amounts.map((el)=>el.text);
+      
+      // console.log(amount_data);
+      // console.log(amount_text)
+      let index_list = []; // store index of needed text items only(non filtered)
+      //to be able to map them to their corresponding amount_data items
+
+      let res1 = amount_text.map(
+        (el, index)=>{
+           let res = el.match(/(\d\s?x\s)?([^*1-9$]+\s)+(.)/);
+          //  console.log(res);
+           if(res){
+             index_list.push(index);
+             console.log(index_list);
+             console.log(res)
+             return res[2];
+            }
+        }
+      ).filter(el=>el);
+      
+      index_list.splice(index_list.length - 6);
+
+      // console.log(res1.splice(res1.length-3));
+      // console.log(res1);
+      // ["azdssd", "qdqsd", "qsdsqd"].map((el, i)=>{console.log(i,'=>',el); return el;})
+      $.each(index_list, function (index, value) { // iterate over index_list to be able to associate text element with the correct corresponding data element
+        // console.log(index)
+        x += '<tr>'; // the second line of table
+        x += '<td>' + res1[index] + '</td>'; // first colon of the table
+        x += '<td>' + amount_data[value] + '</td>'; // second colon of the table
+        x += '<td>' +
+        
+        
+
+        '<div class="quantity"> \
+            <input type="number" min="1" max="9" step="1" value="'+1+'"> \
+        </div>'
+
+        +'</td>' //the third colon of the table
+        x += '<tr>';
+      });
+      $('#tab').append(x); //insert the data in the table body
+    });
+  });
+  $(document).ready(function () {
+    $.getJSON("response (2).json", function (data) {
+      // console.log(JSON.parse(data));
+      console.log(data);
+      var x = '';
+      let amount_data = data.amounts.map((el)=>el.data);
+      let amount_text = data.amounts.map((el)=>el.text);
+      
+      // console.log(amount_data);
+      // console.log(amount_text)
+      
+      let res1 = amount_text.map(el=>{ let res = el.match(/(\d\s?x\s)?([^*1-9$]+\s)+(.)/);
+         if(res) return res[2]});
+    
+
+      // console.log(res1.splice(res1.length-3));
+      // console.log(res1);
+      // ["azdssd", "qdqsd", "qsdsqd"].map((el, i)=>{console.log(i,'=>',el); return el;})
+      $.each(amount_text, function (index, value) { // iterate over index_list to be able to associate text element with the correct corresponding data element
+        // console.log(index)
+        x += '<tr>'; // the second line of table
+        x += '<td>' + res1[index] + '</td>'; // first colon of the table
+        x += '<td>' + amount_data[index] + '</td>'; // second colon of the table
+        x += '<td>' +
+        
+        
+
+        '<div class="quantity"> \
+            <input type="number" min="1" max="9" step="1" value="'+1+'"> \
+        </div>'
+
+        +'</td>' //the third colon of the table
+        x += '<tr>';
+      });
+      $('#tab').append(x); //insert the data in the table body
+    });
+  });
+  $(document).ready(function () {
+    $.getJSON("response (3).json", function (data) {
+      // console.log(JSON.parse(data));
+      console.log(data);
+      var x = '';
+      let amount_data = data.amounts.map((el)=>el.data);
+      let amount_text = data.amounts.map((el)=>el.text);
+      
+      // console.log(amount_data);
+      // console.log(amount_text)
+      
+      let res1 = amount_text.map(el=>{ let res = el.match(/(\d\s?x\s)?([^*1-9$]+\s)+(.)/);
+         if(res) return res[2]});
+    
+
+      // console.log(res1.splice(res1.length-3));
+      // console.log(res1);
+      // ["azdssd", "qdqsd", "qsdsqd"].map((el, i)=>{console.log(i,'=>',el); return el;})
+      $.each(amount_text, function (index, value) { // iterate over index_list to be able to associate text element with the correct corresponding data element
+        // console.log(index)
+        x += '<tr>'; // the second line of table
+        x += '<td>' + res1[index] + '</td>'; // first colon of the table
+        x += '<td>' + amount_data[index] + '</td>'; // second colon of the table
+        x += '<td>' +
+        
+        
+
+        '<div class="quantity"> \
+            <input type="number" min="1" max="9" step="1" value="'+1+'"> \
+        </div>'
+
+        +'</td>' //the third colon of the table
+        x += '<tr>';
+      });
+      $('#tab').append(x); //insert the data in the table body
+    });
+  });
+
+</script>
